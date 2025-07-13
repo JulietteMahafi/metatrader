@@ -1,8 +1,26 @@
-import torch
-import torch.nn as nn
-import joblib
-import numpy as np
-import pandas as pd
+from typing import TYPE_CHECKING
+
+# External libraries
+try:
+    import torch  # type: ignore
+    import torch.nn as nn  # type: ignore
+except ImportError as e:  # pragma: no cover
+    raise ImportError("FIXED_model_server.py requires PyTorch. Install with 'pip install torch' or place it in environment.") from e
+
+try:
+    import joblib  # type: ignore
+except ImportError as e:  # pragma: no cover
+    raise ImportError("joblib missing. Install with 'pip install joblib'.") from e
+
+try:
+    import numpy as np  # type: ignore
+except ImportError as e:  # pragma: no cover
+    raise ImportError("NumPy missing. Install with 'pip install numpy'.") from e
+
+try:
+    import pandas as pd  # type: ignore
+except ImportError as e:  # pragma: no cover
+    raise ImportError("Pandas missing. Install with 'pip install pandas'.") from e
 from pathlib import Path
 import json
 import time
