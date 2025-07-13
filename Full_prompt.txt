@@ -1,0 +1,63 @@
+# MetaTrader ML Integration Project Summary
+
+## Project Overview
+**Client:** Masih (approaching 30, working 9+ hours daily on 10,000h expertise goal)
+**Goal:** Integrate PyTorch Transformer model "JulietteV2" into MetaTrader 5 for automated forex trading
+**Status:** DLL approach implemented but failing with Python import errors
+**Priority:** PAID project - client needs working solution
+
+## Technical Architecture
+**Model:** Transformer-based (512-dim, 8-head, 6-layer) trained on forex data
+- **Input:** 90-bar sequences with 16 features (OHLC, time features, technical indicators)
+- **Output:** 3 classes (BUY, KEEP, SELL)
+- **Performance:** ~40% validation accuracy, F1: 0.36
+- **Risk Management:** R/R 1:2 (10 pips SL, 20 pips TP) - NON-NEGOTIABLE
+
+## Current Implementation (DLL Method)
+**Files Structure:**
+```
+MT5/Libraries/: mql_bridge.pyd, predictor.py, test_dll.py, model_best.pt, scaler.joblib, label_encoder.joblib, model_metadata.json
+MT5/Experts/: JulietteV2_DLL.mq5
+```
+
+**Key Components:**
+1. **mql_bridge.cpp** - C++ DLL bridge between MT5 and Python
+2. **predictor.py** - Python ML inference engine with logging
+3. **JulietteV2_DLL.mq5** - MT5 Expert Advisor with R/R 1:2 trading logic
+
+## Current Problem
+**Error:** "Failed to initialize Python Predictor. Error code: -2"
+**Root Cause:** DLL can't import Python modules (torch, sklearn, pandas)
+**Issue:** MT5's Python environment isolated from system Python packages
+
+## Failed Approaches
+1. **File-based communication** - Path issues
+2. **HTTP server** - External dependency (client requires local)
+3. **ONNX conversion** - Not implemented
+4. **TCP sockets** - Not implemented
+
+## Technical Details
+**Python Environment:** 3.11.9 with uv package manager
+**Dependencies:** torch, scikit-learn, pandas, numpy
+**MT5 Terminal ID:** D0E8209F77C8CF37AD8BF550E51FF075
+**Model Files:** ~300MB PyTorch model + preprocessing artifacts
+
+## Client Characteristics
+- **Communication Style:** Direct, impatient, uses profanity when frustrated
+- **Technical Level:** Self-described "extremely low" Python confidence
+- **Preferences:** Short responses, no JSON syntax, practical solutions
+- **Platform:** Currently on Windows (prefers Ubuntu)
+
+## Next Steps for New Agent
+1. **Debug Python environment:** Check test_dll.py output in MT5 logs
+2. **Fix DLL path injection:** Ensure Python packages accessible from MT5
+3. **Alternative:** Consider standalone executable or different integration method
+4. **Test thoroughly:** Client is frustrated with repeated failures
+
+## Critical Requirements
+- **Local execution only** (no external connections)
+- **R/R 1:2 risk management** (already implemented)
+- **Real-time signal generation** on new bars
+- **Must work with existing model artifacts**
+
+The DLL approach is theoretically correct but Python environment isolation is blocking success. Focus on resolving the import issues or consider alternative local integration methods.

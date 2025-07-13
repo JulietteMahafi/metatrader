@@ -1,0 +1,22 @@
+# Ignore model files
+model_best.pt
+model_metadata.json
+scaler.joblib
+label_encoder.joblib
+
+# Ignore build outputs
+dist/
+build/
+*.exe
+
+# Ignore temp files
+*.pyc
+__pycache__/
+
+# Ignore other large/unneeded
+*.onnx
+*.log
+*.csv
+D0E8209F77C8CF37AD8BF550E51FF075/
+claude/
+socket-lib/ 
