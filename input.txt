@@ -1,6 +1,0 @@
-{"features":[
-{"Body":0.1,"Close":1.0,"High":1.1,"High-Low":0.2,"Is_Doji":0,"Is_Long_Shadow":1,"Is_Spike":0,"Low":0.9,"Open":0.95,"day_cos":0.5,"day_sin":0.866,"gap":0.05,"hour_cos":0.707,"hour_sin":0.707,"minute_cos":1.0,"minute_sin":0.0},
-{"Body":-0.05,"Close":0.95,"High":1.0,"High-Low":0.15,"Is_Doji":1,"Is_Long_Shadow":0,"Is_Spike":1,"Low":0.85,"Open":1.0,"day_cos":-0.5,"day_sin":-0.866,"gap":-0.03,"hour_cos":-0.707,"hour_sin":-0.707,"minute_cos":0.0,"minute_sin":1.0},
-{"Body":0.08,"Close":1.03,"High":1.05,"High-Low":0.1,"Is_Doji":0,"Is_Long_Shadow":1,"Is_Spike":0,"Low":0.95,"Open":0.97,"day_cos":0.0,"day_sin":1.0,"gap":0.02,"hour_cos":1.0,"hour_sin":0.0,"minute_cos":0.5,"minute_sin":0.866},
-// Add 87 more similar objects here with varying values
-]} 
