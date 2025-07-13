@@ -17,13 +17,18 @@ logging.basicConfig(level=logging.INFO, filename='model_server.log', filemode='w
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Define the shared directory for communication
-# Get the AppData directory and build the correct, absolute path
-appdata_dir = os.getenv('APPDATA')
-if not appdata_dir:
-    logging.error("FATAL: APPDATA environment variable not found.")
-    raise ValueError("APPDATA environment variable not found.")
-    
-COMM_DIR = Path(appdata_dir) / "MetaQuotes/Terminal/Common/MQL5/Files"
+# -- Cross-platform communication directory resolution --
+# On Windows (MetaTrader runtime) we use the standard APPDATA path. On other
+# systems or when APPDATA is not set (e.g. local dev / CI on Linux) we fall
+# back to a relative ./comm_dir folder so the script can still be executed &
+# unit-tested.
+
+if os.name == "nt" and os.getenv("APPDATA"):
+    appdata_dir: str = os.getenv("APPDATA")  # type: ignore[assignment]
+    COMM_DIR = Path(appdata_dir) / "MetaQuotes/Terminal/Common/MQL5/Files"
+else:
+    logging.warning("APPDATA not found or non-Windows OS detected – using local 'comm_dir' folder for I/O.")
+    COMM_DIR = Path(__file__).resolve().parent / "comm_dir"
 
 # Ensure the directory exists
 COMM_DIR.mkdir(parents=True, exist_ok=True)
