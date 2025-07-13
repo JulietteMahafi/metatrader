@@ -4,6 +4,22 @@ import pandas as pd
 import torch
 import torch.nn as nn
 import torch.optim as optim
+# ---------------------------------------------------------------------------
+# Back-compat shim: Torch < 2.0 doesn’t have torch.amp; alias torch.cuda.amp so
+# existing calls (torch.amp.autocast / GradScaler) continue to work.
+# ---------------------------------------------------------------------------
+
+import types as _types  # stdlib
+import logging as _logging
+
+if not hasattr(torch, "amp") or not hasattr(torch.amp, "autocast"):
+    # Create a dummy module that proxies to torch.cuda.amp
+    _amp_mod = _types.ModuleType("amp")
+    _cuda_amp = torch.cuda.amp
+    _amp_mod.autocast = _cuda_amp.autocast  # type: ignore[attr-defined]
+    _amp_mod.GradScaler = _cuda_amp.GradScaler  # type: ignore[attr-defined]
+    torch.amp = _amp_mod  # type: ignore[assignment]
+    _logging.info("torch.amp shimmed with torch.cuda.amp for compatibility < PyTorch 2.0")
 from torch.utils.data import Dataset, DataLoader
 from sklearn.preprocessing import RobustScaler, LabelEncoder
 from sklearn.metrics import f1_score, confusion_matrix, classification_report, precision_score, recall_score
@@ -14,16 +30,46 @@ import argparse
 from pathlib import Path
 from typing import Tuple, List, Dict, Any, Optional, Union
 import sys
-import matplotlib.pyplot as plt
-import seaborn as sns
+# Optional plotting libraries – not required for training/inference. Gracefully
+# handle absence so the script still runs in minimal environments.
+try:
+    import matplotlib.pyplot as plt  # type: ignore
+    import seaborn as sns  # type: ignore
+except ImportError:  # pragma: no cover
+    plt = None  # type: ignore
+    sns = None  # type: ignore
+
+# Provide no-op stubs so linters don’t complain about attribute access further
+# down the file when matplotlib / seaborn are unavailable.
+if plt is None:
+    class _DummyPlot:  # pylint: disable=too-few-public-methods
+        def __getattr__(self, _name):
+            def _noop(*_args, **_kwargs):
+                return None
+            return _noop
+    plt = _DummyPlot()  # type: ignore
+
+if sns is None:
+    class _DummySeaborn:  # pylint: disable=too-few-public-methods
+        def __getattr__(self, _name):
+            def _noop(*_args, **_kwargs):
+                return None
+            return _noop
+    sns = _DummySeaborn()  # type: ignore
+
 from datetime import datetime, timedelta
 import math
-from packaging import version
-import joblib
+
+# 'packaging' is just for version comparison; fall back to distutils if absent.
+try:
+    from packaging import version  # type: ignore
+except ImportError:  # pragma: no cover
+    from distutils import version  # type: ignore
+import joblib  # type: ignore
 import gc
-import torch.nn.functional as F
-import sklearn # For NotFittedError
-import torch.serialization # For add_safe_globals
+import torch.nn.functional as F  # type: ignore
+import sklearn  # type: ignore  # For NotFittedError
+import torch.serialization  # type: ignore  # For add_safe_globals
 import _pickle # For UnpicklingError
 
 

@@ -3,8 +3,20 @@ import os
 import json
 from pathlib import Path
 
-# Create a debug log in the MT5 Files directory
-mt5_files_dir = Path(os.getenv('APPDATA')) / 'MetaQuotes/Terminal/D0E8209F77C8CF37AD8BF550E51FF075/MQL5/Files'
+# -- Resolve MT5 Files directory cross-platform --
+# • On Windows with APPDATA available: use the real MT5 path (Terminal-specific or Common).
+# • Otherwise (Linux / macOS / missing APPDATA): fall back to ./comm_dir next to this script
+
+if os.name == 'nt' and os.getenv('APPDATA'):
+    appdata_dir: str = os.getenv('APPDATA')  # type: ignore[assignment]
+    # If you need a terminal-specific folder, replace below; Common is fine for dev
+    mt5_files_dir = Path(appdata_dir) / 'MetaQuotes/Terminal/Common/MQL5/Files'
+else:
+    print("[WARN] APPDATA not found or non-Windows OS detected – using local 'comm_dir' directory.")
+    mt5_files_dir = Path(__file__).resolve().parent / 'comm_dir'
+
+mt5_files_dir.mkdir(parents=True, exist_ok=True)
+
 debug_log = mt5_files_dir / 'mt5_python_debug.json'
 
 debug_info = {
